@@ -1,0 +1,11 @@
+{
+  "updated_at": "2026-05-11T11:35:56.655414+00:00",
+  "data_referencia": "2026-05-11",
+  "airport_icao": "SBBR",
+  "airport_name": "SBBR",
+  "airport_info": {},
+  "source": "SIROS/ANAC",
+  "source_url": "https://sas.anac.gov.br/sas/siros_api/",
+  "arrivals": [],
+  "departures": []
+}

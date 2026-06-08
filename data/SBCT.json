@@ -1,0 +1,11 @@
+{
+  "updated_at": "2026-05-11T11:35:55.211034+00:00",
+  "data_referencia": "2026-05-11",
+  "airport_icao": "SBCT",
+  "airport_name": "SBCT",
+  "airport_info": {},
+  "source": "SIROS/ANAC",
+  "source_url": "https://sas.anac.gov.br/sas/siros_api/",
+  "arrivals": [],
+  "departures": []
+}
