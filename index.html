@@ -421,11 +421,13 @@
     }
 
     function situacaoBadge(sit) {
-      const s = escapeHtml(sit || '');
+      const raw = sit || '';
+      const cmp = raw.toLowerCase();
+      const s = escapeHtml(raw);
       if (!s) return '—';
-      if (s.includes('realizado') || s.includes('real')) return `<span class="badge badge-realizado">✓ ${s}</span>`;
-      if (s.includes('cancelado')) return `<span class="badge badge-cancelado">✕ ${s}</span>`;
-      if (s.includes('desviado')) return `<span class="badge badge-atrasado">↗ ${s}</span>`;
+      if (cmp.includes('realizado') || cmp.includes('real')) return `<span class="badge badge-realizado">✓ ${s}</span>`;
+      if (cmp.includes('cancelado')) return `<span class="badge badge-cancelado">✕ ${s}</span>`;
+      if (cmp.includes('desviado')) return `<span class="badge badge-atrasado">↗ ${s}</span>`;
       return `<span class="badge badge-programado">${s}</span>`;
     }
 
@@ -654,8 +656,8 @@
 
         // Estatísticas
         const total    = dados.length;
-        const realiz   = dados.filter(f => (f.situacao||'').includes('realiz')).length;
-        const canc     = dados.filter(f => (f.situacao||'').includes('cancel')).length;
+        const realiz   = dados.filter(f => (f.situacao||'').toLowerCase().includes('realiz')).length;
+        const canc     = dados.filter(f => (f.situacao||'').toLowerCase().includes('cancel')).length;
         const atrasos  = dados.map(f => f.atraso_partida).filter(v => v !== null && v > 0);
         const mediaAt  = atrasos.length ? Math.round(atrasos.reduce((a,b)=>a+b,0)/atrasos.length) : null;
 
