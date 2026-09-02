@@ -201,12 +201,6 @@ def deduplicar(lista: list) -> list:
             result.append(r)
     return result
 
-antes = len(registros)
-registros = deduplicar(registros)
-removidos = antes - len(registros)
-if removidos:
-    print(f"  Deduplicação: {removidos} registro(s) duplicado(s) removido(s) antes do envio")
-
 # ── Execução principal ────────────────────────────────────────────────────────
 
 todos_voos = buscar_voos_siros()
@@ -236,6 +230,12 @@ print(
     "(data_referencia + icao_empresa + numero_voo + icao_origem + icao_destino + etapa). "
     "Voos já existentes são atualizados — sem duplicatas."
 )
+
+antes = len(registros)
+registros = deduplicar(registros)
+removidos = antes - len(registros)
+if removidos:
+    print(f"  Deduplicação: {removidos} registro(s) duplicado(s) removido(s) antes do envio")
 
 # Envio em lotes ao Supabase
 total_processados = 0
