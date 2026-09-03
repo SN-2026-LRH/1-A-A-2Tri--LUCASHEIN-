@@ -6,139 +6,261 @@
   <title>Painel de Voos — SN-2026</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg:      #0a0e1a; --surface: #111827; --border: #1f2d45;
-      --text:    #e2e8f0; --muted:   #64748b; --accent: #38bdf8;
-      --green:   #4ade80; --yellow:  #facc15; --orange: #fb923c;
-      --red:     #f87171; --purple:  #a78bfa;
-      --mono: 'Courier New', Courier, monospace;
+      --bg:        #090c14;
+      --bg-glow:    radial-gradient(1200px 600px at 15% -10%, rgba(99,102,241,.16), transparent 60%),
+                    radial-gradient(900px 500px at 100% 0%, rgba(56,189,248,.10), transparent 55%);
+      --surface:   #10151f;
+      --surface-2: #161d2c;
+      --border:    #232c40;
+      --border-soft: rgba(255,255,255,.06);
+      --text:      #e8ecf6;
+      --text-dim:  #a7b0c4;
+      --muted:     #6b7690;
+      --accent:    #5eb8ff;
+      --accent-2:  #8b7bf7;
+      --green:     #35d399;
+      --yellow:    #fbbf24;
+      --orange:    #fb923c;
+      --red:       #f8717c;
+      --purple:    #b09bfb;
+      --radius:    12px;
+      --radius-sm: 8px;
+      --mono: 'SF Mono', 'Cascadia Code', 'Courier New', Courier, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.5);
     }
-    body { background: var(--bg); color: var(--text);
-           font-family: 'Segoe UI', system-ui, sans-serif;
-           min-height: 100vh; padding: 1.5rem 1rem 3rem; }
 
-    header { display: flex; flex-wrap: wrap; align-items: center;
-             justify-content: space-between; gap: 1rem;
-             margin-bottom: 1.5rem; padding-bottom: 1rem;
-             border-bottom: 1px solid var(--border); }
-    .header-left h1 { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
-    .header-left p  { font-size: .76rem; color: var(--muted); margin-top: 3px; }
-    .header-right   { display: flex; align-items: center; gap: .75rem; }
-    .badge-src { font-size: .68rem; font-weight: 600; padding: 3px 9px;
-                 border-radius: 99px; background: rgba(74,222,128,.1);
-                 color: var(--green); border: 1px solid rgba(74,222,128,.2); }
-    .clock { font-family: var(--mono); font-size: 1.35rem; color: var(--accent);
-             letter-spacing: .1em; }
+    html { color-scheme: dark; }
 
-    /* Abas */
-    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border);
-            margin-bottom: 1.5rem; }
-    .tab { padding: .6rem 1.2rem; font-size: .85rem; cursor: pointer;
-           color: var(--muted); border-bottom: 2px solid transparent;
-           margin-bottom: -1px; transition: color .15s; }
-    .tab.active { color: var(--accent); border-bottom-color: var(--accent);
-                  font-weight: 600; }
+    body {
+      background: var(--bg-glow), var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0 0 3rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ── Header ─────────────────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 1rem;
+      padding: 1.1rem 1.5rem;
+      background: rgba(9,12,20,.78);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .header-left h1 {
+      font-size: 1.28rem; font-weight: 800; letter-spacing: -.01em;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .header-left p { font-size: .76rem; color: var(--muted); margin-top: 3px; }
+    .header-right { display: flex; align-items: center; gap: .85rem; }
+    .badge-src {
+      font-size: .68rem; font-weight: 600; padding: 4px 10px;
+      border-radius: 99px; background: rgba(53,211,153,.1);
+      color: var(--green); border: 1px solid rgba(53,211,153,.22);
+      white-space: nowrap;
+    }
+    .clock {
+      font-family: var(--mono); font-size: 1.3rem; color: var(--accent);
+      letter-spacing: .08em; font-variant-numeric: tabular-nums;
+    }
+
+    .shell-inner { padding-top: 1.5rem; }
+
+    /* ── Abas ───────────────────────────────────────────────────────── */
+    .tabs {
+      display: inline-flex; gap: 3px; padding: 4px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 999px; margin-bottom: 1.5rem;
+      max-width: 100%; overflow-x: auto;
+    }
+    .tab {
+      padding: .5rem 1.15rem; font-size: .83rem; font-weight: 600;
+      cursor: pointer; color: var(--muted); border-radius: 999px;
+      white-space: nowrap; transition: color .15s, background .15s;
+    }
+    .tab.active { color: var(--bg); background: linear-gradient(120deg, var(--accent), var(--accent-2)); }
     .tab:hover:not(.active) { color: var(--text); }
     .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel.active { display: block; animation: fadein .2s ease; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-    /* Filtros */
-    .filters-panel { background: var(--surface); border: 1px solid var(--border);
-                     border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
-    .filters-title { font-size: .67rem; font-weight: 700; letter-spacing: .1em;
-                     text-transform: uppercase; color: var(--muted); margin-bottom: .75rem; }
-    .filters-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: flex-end; }
-    .filter-group { display: flex; flex-direction: column; gap: .28rem; min-width: 140px; }
-    .filter-group label { font-size: .71rem; color: var(--muted); }
-    select, input[type="date"], .btn {
+    /* ── Filtros ────────────────────────────────────────────────────── */
+    .filters-panel {
+      background: linear-gradient(180deg, var(--surface-2), var(--surface));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow);
+    }
+    .filters-title {
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .85rem;
+    }
+    .filters-row { display: flex; flex-wrap: wrap; gap: .85rem; align-items: flex-end; }
+    .filter-group { display: flex; flex-direction: column; gap: .32rem; min-width: 150px; }
+    .filter-group label { font-size: .71rem; color: var(--text-dim); font-weight: 500; }
+
+    select, input[type="date"], input[type="month"], input[type="text"], .btn {
       background: var(--bg); color: var(--text);
-      border: 1px solid var(--border); border-radius: 6px;
-      padding: .4rem .75rem; font-size: .82rem; cursor: pointer; }
-    select:focus, input[type="date"]:focus { border-color: var(--accent); outline: none; }
-    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.6); }
-    .btn { background: transparent; color: var(--accent); border-color: var(--accent);
-           align-self: flex-end; white-space: nowrap; transition: background .15s; }
-    .btn:hover { background: rgba(56,189,248,.1); }
-    .btn:disabled { opacity: .4; cursor: default; }
-    .divider { width: 1px; height: 36px; background: var(--border); align-self: flex-end; }
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: .5rem .8rem; font-size: .83rem; font-family: inherit;
+      cursor: pointer; transition: border-color .15s, box-shadow .15s;
+    }
+    select:focus, input:focus {
+      border-color: var(--accent); outline: none;
+      box-shadow: 0 0 0 3px rgba(94,184,255,.15);
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(.7); cursor: pointer; }
 
-    /* Cards */
+    .btn {
+      background: rgba(94,184,255,.08); color: var(--accent); border-color: rgba(94,184,255,.3);
+      align-self: flex-end; white-space: nowrap; font-weight: 600;
+      transition: background .15s, transform .1s;
+    }
+    .btn:hover { background: rgba(94,184,255,.16); }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .35; cursor: default; }
+
+    .divider { width: 1px; height: 38px; background: var(--border); align-self: flex-end; }
+
+    /* ── Cards de info ──────────────────────────────────────────────── */
     .info-cards { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
-    .info-card { background: var(--surface); border: 1px solid var(--border);
-                 border-radius: 8px; padding: .55rem .9rem; }
-    .info-card .lbl { font-size: .63rem; color: var(--muted); text-transform: uppercase;
-                      letter-spacing: .07em; margin-bottom: 2px; }
-    .info-card .val { font-size: .9rem; font-weight: 600; color: var(--text); }
+    .info-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: .6rem 1rem; min-width: 110px;
+      box-shadow: var(--shadow);
+    }
+    .info-card .lbl {
+      font-size: .63rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: .07em; margin-bottom: 3px; font-weight: 600;
+    }
+    .info-card .val { font-size: .95rem; font-weight: 700; color: var(--text); }
     .info-card .val.accent { color: var(--accent); }
 
-    #meta-bar { font-size: .74rem; color: var(--muted); margin-bottom: 1.25rem; }
+    #meta-bar { font-size: .76rem; color: var(--muted); margin-bottom: 1.25rem; }
 
-    .section-title { display: flex; align-items: center; gap: .5rem;
-                     font-size: .67rem; font-weight: 700; letter-spacing: .12em;
-                     text-transform: uppercase; color: var(--muted);
-                     margin-bottom: .45rem; margin-top: 1.5rem; }
-    .arrow-in  { color: var(--green);  font-size: .9rem; }
-    .arrow-out { color: var(--orange); font-size: .9rem; }
+    .section-title {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: .6rem; margin-top: 1.75rem;
+    }
+    .arrow-in  { color: var(--green);  font-size: .95rem; }
+    .arrow-out { color: var(--orange); font-size: .95rem; }
 
-    /* Tabela */
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: .79rem; }
-    thead th { background: var(--surface); color: var(--muted); font-weight: 600;
-               font-size: .66rem; letter-spacing: .07em; text-transform: uppercase;
-               padding: .55rem .75rem; text-align: left;
-               border-bottom: 1px solid var(--border); white-space: nowrap;
-               cursor: pointer; user-select: none; }
+    /* ── Tabela ─────────────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: .81rem; }
+    thead th {
+      background: var(--surface-2); color: var(--muted); font-weight: 700;
+      font-size: .66rem; letter-spacing: .06em; text-transform: uppercase;
+      padding: .7rem .9rem; text-align: left;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+      cursor: pointer; user-select: none; transition: color .15s;
+    }
     thead th:hover { color: var(--accent); }
-    tbody tr { border-bottom: 1px solid var(--border); }
-    tbody tr:hover { background: rgba(255,255,255,.02); }
-    tbody td { padding: .58rem .75rem; white-space: nowrap; vertical-align: middle; }
-    .td-time   { font-family: var(--mono); font-size: .86rem; color: var(--accent); }
-    .td-flight { font-family: var(--mono); font-weight: 700; }
-    .td-muted  { color: var(--muted); font-size: .76rem; }
+    tbody tr { border-bottom: 1px solid var(--border-soft); transition: background .12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(94,184,255,.045); }
+    tbody td { padding: .65rem .9rem; white-space: nowrap; vertical-align: middle; }
 
-    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px;
-             border-radius: 99px; font-size: .68rem; font-weight: 600; }
+    .td-time   { font-family: var(--mono); font-size: .87rem; color: var(--accent); font-weight: 600; }
+    .td-flight { font-family: var(--mono); font-weight: 700; letter-spacing: .01em; }
+    .td-muted  { color: var(--text-dim); font-size: .78rem; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px;
+      border-radius: 99px; font-size: .69rem; font-weight: 700;
+      border: 1px solid transparent;
+    }
     .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-programado { background: rgba(251,191,36,.1); color: var(--yellow); border-color: rgba(251,191,36,.22); }
     .badge-programado .dot { background: var(--yellow); }
-    .badge-programado { background: rgba(250,204,21,.1); color: var(--yellow); }
-    .badge-domestico  { background: rgba(56,189,248,.08); color: var(--accent); }
-    .badge-inter      { background: rgba(167,139,250,.1); color: var(--purple); }
-    .badge-realizado  { background: rgba(74,222,128,.1); color: var(--green); }
-    .badge-cancelado  { background: rgba(248,113,113,.1); color: var(--red); }
-    .badge-atrasado   { background: rgba(251,146,60,.1); color: var(--orange); }
+    .badge-domestico  { background: rgba(94,184,255,.1);  color: var(--accent); border-color: rgba(94,184,255,.22); }
+    .badge-inter      { background: rgba(176,155,251,.12); color: var(--purple); border-color: rgba(176,155,251,.24); }
+    .badge-realizado  { background: rgba(53,211,153,.1);  color: var(--green);  border-color: rgba(53,211,153,.22); }
+    .badge-cancelado  { background: rgba(248,113,124,.1); color: var(--red);    border-color: rgba(248,113,124,.22); }
+    .badge-atrasado   { background: rgba(251,146,60,.1);  color: var(--orange); border-color: rgba(251,146,60,.22); }
 
-    .airline-pill { font-size: .68rem; font-weight: 600; padding: 2px 7px;
-                    border-radius: 4px; background: rgba(56,189,248,.08);
-                    color: var(--accent); border: 1px solid rgba(56,189,248,.15); }
-    .seats-pill { font-size: .67rem; padding: 1px 6px; border-radius: 4px;
-                  background: rgba(74,222,128,.08); color: var(--green); }
-    .empty { text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: .83rem; }
+    .airline-pill {
+      font-size: .7rem; font-weight: 700; padding: 3px 8px;
+      border-radius: 6px; background: rgba(94,184,255,.08);
+      color: var(--accent); border: 1px solid rgba(94,184,255,.18);
+    }
+    .seats-pill {
+      font-size: .69rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;
+      background: rgba(53,211,153,.08); color: var(--green);
+    }
+    .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); font-size: .84rem; }
 
-    .pagination { display: flex; align-items: center; gap: .5rem; margin-top: .75rem;
-                  font-size: .78rem; color: var(--muted); flex-wrap: wrap; }
-    .page-btn { background: transparent; color: var(--muted);
-                border: 1px solid var(--border); border-radius: 5px;
-                padding: 3px 10px; font-size: .76rem; cursor: pointer; transition: all .15s; }
+    .pagination {
+      display: flex; align-items: center; gap: .5rem; margin-top: .85rem;
+      font-size: .78rem; color: var(--muted); flex-wrap: wrap;
+    }
+    .page-btn {
+      background: var(--surface); color: var(--muted);
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: 4px 11px; font-size: .77rem; cursor: pointer; transition: all .15s;
+      font-family: inherit;
+    }
     .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-    .page-btn.active { background: var(--accent); color: var(--bg);
-                       border-color: var(--accent); font-weight: 600; }
+    .page-btn.active {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: var(--bg); border-color: transparent; font-weight: 700;
+    }
     .page-btn:disabled { opacity: .3; cursor: default; }
 
-    /* Histórico */
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                 gap: .75rem; margin-bottom: 1.5rem; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border);
-                 border-radius: 8px; padding: .75rem 1rem; }
-    .stat-card .st-lbl { font-size: .65rem; color: var(--muted); text-transform: uppercase;
-                         letter-spacing: .07em; margin-bottom: 4px; }
-    .stat-card .st-val { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
-    .stat-card .st-sub { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+    /* ── Histórico ──────────────────────────────────────────────────── */
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: .85rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: linear-gradient(155deg, var(--surface-2), var(--surface));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: .9rem 1.1rem; box-shadow: var(--shadow);
+    }
+    .stat-card .st-lbl {
+      font-size: .65rem; color: var(--muted); text-transform: uppercase;
+      letter-spacing: .07em; margin-bottom: 5px; font-weight: 600;
+    }
+    .stat-card .st-val {
+      font-size: 1.55rem; font-weight: 800; letter-spacing: -.01em;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .stat-card .st-sub { font-size: .71rem; color: var(--muted); margin-top: 3px; }
 
-    footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
-             font-size: .7rem; color: var(--muted); display: flex; flex-wrap: wrap;
-             justify-content: space-between; gap: .5rem; }
+    footer {
+      margin-top: 2.75rem; padding-top: 1.1rem; border-top: 1px solid var(--border-soft);
+      font-size: .71rem; color: var(--muted); display: flex; flex-wrap: wrap;
+      justify-content: space-between; gap: .5rem;
+    }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+
+    /* ── Responsivo ─────────────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      header { padding: 1rem; }
+      .shell { padding: 0 1rem; }
+      .clock { font-size: 1.05rem; }
+      .filter-group { min-width: 130px; flex: 1 1 45%; }
+      .divider { display: none; }
+      .stat-card .st-val { font-size: 1.3rem; }
+    }
   </style>
 </head>
 <body>
@@ -161,178 +283,182 @@
     </div>
   </header>
 
-  <!-- Abas -->
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('voos')">Voos do dia</div>
-    <div class="tab" onclick="showTab('historico')">Histórico ANAC</div>
-    <div class="tab" onclick="showTab('pipeline')">Pipeline</div>
-  </div>
+  <div class="shell shell-inner">
 
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- ABA: VOOS DO DIA                              -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="tab-voos" class="tab-panel active">
+    <!-- Abas -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('voos')">Voos do dia</div>
+      <div class="tab" onclick="showTab('historico')">Histórico ANAC</div>
+      <div class="tab" onclick="showTab('pipeline')">Pipeline</div>
+    </div>
 
-    <div class="filters-panel">
-      <div class="filters-title">Selecionar aeroporto e data</div>
-      <div class="filters-row">
-        <div class="filter-group">
-          <label for="sel-state">Estado</label>
-          <select id="sel-state" onchange="onStateChange()">
-            <option value="">Todos os estados</option>
-          </select>
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- ABA: VOOS DO DIA                              -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div id="tab-voos" class="tab-panel active">
+
+      <div class="filters-panel">
+        <div class="filters-title">Selecionar aeroporto e data</div>
+        <div class="filters-row">
+          <div class="filter-group">
+            <label for="sel-state">Estado</label>
+            <select id="sel-state" onchange="onStateChange()">
+              <option value="">Todos os estados</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="sel-city">Município</label>
+            <select id="sel-city" onchange="onCityChange()">
+              <option value="">Selecione o estado</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="sel-airport">Aeroporto (ICAO)</label>
+            <select id="sel-airport" onchange="onAirportChange()">
+              <option value="">Selecione o município</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="sel-date">Data</label>
+            <input type="date" id="sel-date" onchange="loadFlights()">
+          </div>
+          <div class="divider"></div>
+          <div class="filter-group">
+            <label for="filter-airline">Companhia</label>
+            <select id="filter-airline" onchange="applyFilters()">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-type">Operação</label>
+            <select id="filter-type" onchange="applyFilters()">
+              <option value="">Todas</option>
+              <option value="Doméstico">Doméstico</option>
+              <option value="Internacional">Internacional</option>
+            </select>
+          </div>
+          <button class="btn" id="btn-refresh" onclick="loadFlights()" disabled>↺ Atualizar</button>
         </div>
-        <div class="filter-group">
-          <label for="sel-city">Município</label>
-          <select id="sel-city" onchange="onCityChange()">
-            <option value="">Selecione o estado</option>
-          </select>
+      </div>
+
+      <div class="info-cards" id="info-cards" style="display:none">
+        <div class="info-card"><div class="lbl">Aeroporto</div><div class="val accent" id="card-icao">—</div></div>
+        <div class="info-card"><div class="lbl">Data</div><div class="val" id="card-data">—</div></div>
+        <div class="info-card"><div class="lbl">Chegadas</div><div class="val" id="card-chegadas">—</div></div>
+        <div class="info-card"><div class="lbl">Partidas</div><div class="val" id="card-partidas">—</div></div>
+        <div class="info-card"><div class="lbl">Último pipeline</div><div class="val" id="card-pipeline">—</div></div>
+      </div>
+
+      <div id="meta-bar">Carregando lista de aeroportos...</div>
+
+      <div class="section-title"><span class="arrow-in">↓</span> Chegadas</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th onclick="sortTable('chegadas','chegada_iso')">Horário (BRT) ↕</th>
+            <th>Voo</th><th>Companhia</th><th>Aeronave</th>
+            <th>Assentos</th>
+            <th onclick="sortTable('chegadas','icao_origem')">Origem ↕</th>
+            <th>Operação</th>
+          </tr></thead>
+          <tbody id="tbody-chegadas">
+            <tr><td colspan="7" class="empty">Selecione um aeroporto para carregar os voos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pag-chegadas"></div>
+
+      <div class="section-title"><span class="arrow-out">↑</span> Partidas</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th onclick="sortTable('partidas','partida_iso')">Horário (BRT) ↕</th>
+            <th>Voo</th><th>Companhia</th><th>Aeronave</th>
+            <th>Assentos</th>
+            <th onclick="sortTable('partidas','icao_destino')">Destino ↕</th>
+            <th>Operação</th>
+          </tr></thead>
+          <tbody id="tbody-partidas">
+            <tr><td colspan="7" class="empty">Selecione um aeroporto para carregar os voos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pag-partidas"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- ABA: HISTÓRICO ANAC                           -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div id="tab-historico" class="tab-panel">
+      <div class="filters-panel">
+        <div class="filters-title">Consulta histórica — VRA/ANAC</div>
+        <div class="filters-row">
+          <div class="filter-group">
+            <label for="hist-icao">Aeroporto (ICAO)</label>
+            <input type="text" id="hist-icao" placeholder="Ex: SBCA" maxlength="4"
+                   style="text-transform:uppercase;width:100px">
+          </div>
+          <div class="filter-group">
+            <label for="hist-ano-mes">Mês de referência</label>
+            <input type="month" id="hist-ano-mes">
+          </div>
+          <button class="btn" onclick="loadHistorico()">🔍 Consultar</button>
         </div>
-        <div class="filter-group">
-          <label for="sel-airport">Aeroporto (ICAO)</label>
-          <select id="sel-airport" onchange="onAirportChange()">
-            <option value="">Selecione o município</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="sel-date">Data</label>
-          <input type="date" id="sel-date" onchange="loadFlights()">
-        </div>
-        <div class="divider"></div>
-        <div class="filter-group">
-          <label for="filter-airline">Companhia</label>
-          <select id="filter-airline" onchange="applyFilters()">
-            <option value="">Todas</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="filter-type">Operação</label>
-          <select id="filter-type" onchange="applyFilters()">
-            <option value="">Todas</option>
-            <option value="Doméstico">Doméstico</option>
-            <option value="Internacional">Internacional</option>
-          </select>
-        </div>
-        <button class="btn" id="btn-refresh" onclick="loadFlights()" disabled>↺ Atualizar</button>
+      </div>
+
+      <div class="stat-grid" id="hist-stats" style="display:none">
+        <div class="stat-card"><div class="st-lbl">Total de voos</div><div class="st-val" id="h-total">—</div></div>
+        <div class="stat-card"><div class="st-lbl">Realizados</div><div class="st-val" id="h-real">—</div><div class="st-sub" id="h-real-pct"></div></div>
+        <div class="stat-card"><div class="st-lbl">Cancelados</div><div class="st-val" id="h-canc">—</div><div class="st-sub" id="h-canc-pct"></div></div>
+        <div class="stat-card"><div class="st-lbl">Atraso médio (partida)</div><div class="st-val" id="h-atraso">—</div><div class="st-sub">minutos</div></div>
+      </div>
+
+      <div id="hist-meta" style="font-size:.76rem;color:var(--muted);margin-bottom:1rem"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Voo</th><th>Companhia</th><th>Data</th>
+            <th>Origem</th><th>Destino</th>
+            <th>Atraso Partida</th><th>Situação</th>
+          </tr></thead>
+          <tbody id="tbody-historico">
+            <tr><td colspan="7" class="empty">Selecione um aeroporto e mês para consultar o histórico.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pag-historico"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- ABA: PIPELINE                                 -->
+    <!-- ══════════════════════════════════════════════ -->
+    <div id="tab-pipeline" class="tab-panel">
+      <div style="margin-bottom:1rem">
+        <button class="btn" onclick="loadPipeline()">↺ Atualizar log</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Concluído em (BRT)</th><th>Aeroportos</th>
+            <th>Processados</th><th>Lotes</th><th>Erros</th><th>Status</th>
+          </tr></thead>
+          <tbody id="tbody-pipeline">
+            <tr><td colspan="6" class="empty">Clique em Atualizar para carregar o log.</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="info-cards" id="info-cards" style="display:none">
-      <div class="info-card"><div class="lbl">Aeroporto</div><div class="val accent" id="card-icao">—</div></div>
-      <div class="info-card"><div class="lbl">Data</div><div class="val" id="card-data">—</div></div>
-      <div class="info-card"><div class="lbl">Chegadas</div><div class="val" id="card-chegadas">—</div></div>
-      <div class="info-card"><div class="lbl">Partidas</div><div class="val" id="card-partidas">—</div></div>
-      <div class="info-card"><div class="lbl">Último pipeline</div><div class="val" id="card-pipeline">—</div></div>
-    </div>
+    <footer>
+      <span>Dados: <a href="https://sas.anac.gov.br/sas/siros_api/" target="_blank">SIROS/ANAC</a> ·
+            Histórico: <a href="https://sistemas.anac.gov.br/dadosabertos/" target="_blank">VRA/ANAC</a> ·
+            Banco: <a href="https://supabase.com" target="_blank">Supabase</a></span>
+      <span>Horários em BRT (UTC-3) · Histórico acumulado disponível</span>
+      <span><a href="https://github.com/SN-2026" target="_blank">Ver no GitHub</a></span>
+    </footer>
 
-    <div id="meta-bar">Carregando lista de aeroportos...</div>
-
-    <div class="section-title"><span class="arrow-in">↓</span> Chegadas</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th onclick="sortTable('chegadas','chegada_iso')">Horário (BRT) ↕</th>
-          <th>Voo</th><th>Companhia</th><th>Aeronave</th>
-          <th>Assentos</th>
-          <th onclick="sortTable('chegadas','icao_origem')">Origem ↕</th>
-          <th>Operação</th>
-        </tr></thead>
-        <tbody id="tbody-chegadas">
-          <tr><td colspan="7" class="empty">Selecione um aeroporto para carregar os voos.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="pagination" id="pag-chegadas"></div>
-
-    <div class="section-title"><span class="arrow-out">↑</span> Partidas</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th onclick="sortTable('partidas','partida_iso')">Horário (BRT) ↕</th>
-          <th>Voo</th><th>Companhia</th><th>Aeronave</th>
-          <th>Assentos</th>
-          <th onclick="sortTable('partidas','icao_destino')">Destino ↕</th>
-          <th>Operação</th>
-        </tr></thead>
-        <tbody id="tbody-partidas">
-          <tr><td colspan="7" class="empty">Selecione um aeroporto para carregar os voos.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="pagination" id="pag-partidas"></div>
   </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- ABA: HISTÓRICO ANAC                           -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="tab-historico" class="tab-panel">
-    <div class="filters-panel">
-      <div class="filters-title">Consulta histórica — VRA/ANAC</div>
-      <div class="filters-row">
-        <div class="filter-group">
-          <label for="hist-icao">Aeroporto (ICAO)</label>
-          <input type="text" id="hist-icao" placeholder="Ex: SBCA" maxlength="4"
-                 style="text-transform:uppercase;width:100px">
-        </div>
-        <div class="filter-group">
-          <label for="hist-ano-mes">Mês de referência</label>
-          <input type="month" id="hist-ano-mes">
-        </div>
-        <button class="btn" onclick="loadHistorico()">🔍 Consultar</button>
-      </div>
-    </div>
-
-    <div class="stat-grid" id="hist-stats" style="display:none">
-      <div class="stat-card"><div class="st-lbl">Total de voos</div><div class="st-val" id="h-total">—</div></div>
-      <div class="stat-card"><div class="st-lbl">Realizados</div><div class="st-val" id="h-real">—</div><div class="st-sub" id="h-real-pct"></div></div>
-      <div class="stat-card"><div class="st-lbl">Cancelados</div><div class="st-val" id="h-canc">—</div><div class="st-sub" id="h-canc-pct"></div></div>
-      <div class="stat-card"><div class="st-lbl">Atraso médio (partida)</div><div class="st-val" id="h-atraso">—</div><div class="st-sub">minutos</div></div>
-    </div>
-
-    <div id="hist-meta" style="font-size:.74rem;color:var(--muted);margin-bottom:1rem"></div>
-
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Voo</th><th>Companhia</th><th>Data</th>
-          <th>Origem</th><th>Destino</th>
-          <th>Atraso Partida</th><th>Situação</th>
-        </tr></thead>
-        <tbody id="tbody-historico">
-          <tr><td colspan="7" class="empty">Selecione um aeroporto e mês para consultar o histórico.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="pagination" id="pag-historico"></div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════ -->
-  <!-- ABA: PIPELINE                                 -->
-  <!-- ══════════════════════════════════════════════ -->
-  <div id="tab-pipeline" class="tab-panel">
-    <div style="margin-bottom:1rem">
-      <button class="btn" onclick="loadPipeline()">↺ Atualizar log</button>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Concluído em (BRT)</th><th>Aeroportos</th>
-          <th>Processados</th><th>Lotes</th><th>Erros</th><th>Status</th>
-        </tr></thead>
-        <tbody id="tbody-pipeline">
-          <tr><td colspan="6" class="empty">Clique em Atualizar para carregar o log.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <footer>
-    <span>Dados: <a href="https://sas.anac.gov.br/sas/siros_api/" target="_blank">SIROS/ANAC</a> ·
-          Histórico: <a href="https://sistemas.anac.gov.br/dadosabertos/" target="_blank">VRA/ANAC</a> ·
-          Banco: <a href="https://supabase.com" target="_blank">Supabase</a></span>
-    <span>Horários em BRT (UTC-3) · Histórico acumulado disponível</span>
-    <span><a href="https://github.com/SN-2026" target="_blank">Ver no GitHub</a></span>
-  </footer>
 
   <script>
     /* ── Segurança: escapeHtml ────────────────────────────────────────────
@@ -592,7 +718,7 @@
     }
 
     function renderRow(f, kind) {
-      const horario = kind === 'arrival' ? fmtHora(f.chegada_iso) : fmtHora(f.partida_iso);
+      const horario = escapeHtml(kind === 'arrival' ? fmtHora(f.chegada_iso) : fmtHora(f.partida_iso));
       const rota    = kind === 'arrival'
         ? escapeHtml(f.icao_origem  || '—')
         : escapeHtml(f.icao_destino || '—');
@@ -708,7 +834,7 @@
           return;
         }
         tb.innerHTML = exec.map(e => `<tr>
-          <td class="td-time">${fmtDatetime(e.concluido_em)}</td>
+          <td class="td-time">${escapeHtml(fmtDatetime(e.concluido_em))}</td>
           <td class="td-muted">${escapeHtml((e.aeroportos_buscados||[]).join(', '))}</td>
           <td>${escapeHtml(String(e.voos_processados ?? '—'))}</td>
           <td>${escapeHtml(String(e.lotes_enviados   ?? '—'))}</td>
